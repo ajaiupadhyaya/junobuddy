@@ -1,15 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 
 const defaultState = {
   hunger: 70,
   energy: 70,
-  mood: "neutral",
+  mood: 'neutral',
+  activity: 'idle',
+  timeOfDay: 'day',
   lastUpdated: Date.now(),
 };
 
 export function useJunoState() {
   const [juno, setJuno] = useState(() => {
-    const saved = localStorage.getItem("junoState");
+    const saved = localStorage.getItem('junoState');
     return saved ? JSON.parse(saved) : defaultState;
   });
 
@@ -21,14 +23,16 @@ export function useJunoState() {
         ...prev,
         hunger: Math.max(prev.hunger - minutesPassed * 2, 0),
         energy: Math.max(prev.energy - minutesPassed * 1, 0),
-        mood: "needs attention",
-        lastUpdated: now
+        mood: 'needs attention',
+        activity: 'idle',
+        timeOfDay: 'day',
+        lastUpdated: now,
       }));
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("junoState", JSON.stringify(juno));
+    localStorage.setItem('junoState', JSON.stringify(juno));
   }, [juno]);
 
   return [juno, setJuno];

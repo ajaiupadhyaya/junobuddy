@@ -8,42 +8,72 @@ export default function App() {
   const [juno, setJuno] = useJunoState();
 
   const handleFeed = () => {
+    const sound = new Audio('/meow.mp3');
+    sound.play();
     setJuno(prev => ({
       ...prev,
       hunger: Math.min(prev.hunger + 20, 100),
-      mood: "satisfied",
-      lastUpdated: Date.now()
+      mood: 'satisfied',
+      activity: 'eating',
+      timeOfDay: 'day',
+      lastUpdated: Date.now(),
     }));
   };
 
   const handlePlay = () => {
+    const sound = new Audio('/sparkle.wav');
+    sound.play();
     setJuno(prev => ({
       ...prev,
-      energy: Math.max(prev.energy - 15, 0),
-      mood: "playful",
       hunger: Math.max(prev.hunger - 10, 0),
-      lastUpdated: Date.now()
+      energy: Math.max(prev.energy - 15, 0),
+      mood: 'playful',
+      activity: 'playing',
+      timeOfDay: 'day',
+      lastUpdated: Date.now(),
     }));
   };
 
   const handleRest = () => {
+    const sound = new Audio('/sleep.wav');
+    sound.play();
     setJuno(prev => ({
       ...prev,
       energy: Math.min(prev.energy + 25, 100),
-      mood: "rested",
-      lastUpdated: Date.now()
+      mood: 'rested',
+      activity: 'sleeping',
+      timeOfDay: 'night',
+      lastUpdated: Date.now(),
     }));
   };
 
+  const background = juno.timeOfDay === 'night' ? '/room_night.png' : '/room_day.png';
+
+  let junoSprite = '/juno_idle.png';
+  if (juno.activity === 'eating') junoSprite = '/juno_eat.png';
+  if (juno.activity === 'playing') junoSprite = '/juno_play.png';
+  if (juno.activity === 'sleeping') junoSprite = '/juno_sleep.png';
+
   return (
-    <div className="container">
-      <h1>🐱 Welcome to JunoBuddy!</h1>
-      <p>A cozy care companion for Maya and Juno 💖</p>
+    <div
+      className="scene"
+      style={{
+        backgroundImage: `url(${background})`,
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat',
+        minHeight: '100vh',
+        paddingTop: '2rem',
+        textAlign: 'center',
+      }}
+    >
+      <h1>🐱 JunoBuddy</h1>
+      <p>{juno.activity === 'sleeping' ? 'Zzz...' : 'Juno is here for you!'}</p>
 
       <img
-        src="/juno_placeholder.png"
+        src={junoSprite}
         alt="Juno"
-        className="juno-image"
+        className={`juno-image ${juno.mood === 'very happy' ? 'sparkle' : ''} ${juno.hunger < 30 ? 'shake' : ''}`}
+        style={{ width: '128px', imageRendering: 'pixelated', margin: '20px auto' }}
       />
 
       <div className="status-bars">
